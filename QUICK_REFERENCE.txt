@@ -1,0 +1,177 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                  🚀 RIDESHARE BACKEND - QUICK REFERENCE          ║
+╚══════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 📁 PROJECT STRUCTURE (29 Files Total)                           │
+├─────────────────────────────────────────────────────────────────┤
+│ model/            → User.java, Ride.java                        │
+│ repository/       → UserRepository, RideRepository              │
+│ service/          → AuthService, RideService                    │
+│ controller/       → Auth, Ride, User, Driver controllers        │
+│ config/           → SecurityConfig, JwtAuthenticationFilter     │
+│ dto/              → Request/Response objects with validation    │
+│ exception/        → GlobalExceptionHandler + custom exceptions  │
+│ util/             → JwtUtil                                     │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔐 AUTHENTICATION FLOW                                          │
+├─────────────────────────────────────────────────────────────────┤
+│ 1. Register → BCrypt password → Save to MongoDB                │
+│ 2. Login → Validate → Generate JWT with username + role        │
+│ 3. Client stores token                                         │
+│ 4. Send token: Authorization: Bearer <token>                   │
+│ 5. JwtAuthenticationFilter validates on each request           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 🚗 RIDE LIFECYCLE                                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   REQUESTED  →  ACCEPTED  →  COMPLETED                         │
+│      ↑             ↑            ↑                               │
+│   (User)       (Driver)    (User/Driver)                       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 📡 API ENDPOINTS (7 Total)                                      │
+├─────────────────────────────────────────────────────────────────┤
+│ PUBLIC (No Auth):                                               │
+│   POST /api/auth/register       → Register user/driver         │
+│   POST /api/auth/login          → Get JWT token                │
+│                                                                 │
+│ USER (ROLE_USER):                                               │
+│   POST /api/v1/rides            → Create ride request          │
+│   GET  /api/v1/user/rides       → View my rides                │
+│                                                                 │
+│ DRIVER (ROLE_DRIVER):                                           │
+│   GET  /api/v1/driver/rides/requests  → View pending           │
+│   POST /api/v1/driver/rides/{id}/accept → Accept ride          │
+│                                                                 │
+│ SHARED (USER or DRIVER):                                        │
+│   POST /api/v1/rides/{id}/complete → Mark as completed         │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 🛠️ QUICK COMMANDS                                               │
+├─────────────────────────────────────────────────────────────────┤
+│ # Start MongoDB                                                │
+│ brew services start mongodb-community                          │
+│                                                                │
+│ # Run Application                                              │
+│ mvn spring-boot:run                                            │
+│                                                                │
+│ # Test Complete Workflow                                       │
+│ ./test-workflow.sh                                             │
+│                                                                │
+│ # Application runs on                                          │
+│ http://localhost:8081                                          │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 📝 TESTING EXAMPLES                                             │
+├─────────────────────────────────────────────────────────────────┤
+│ # Register                                                      │
+│ curl -X POST http://localhost:8081/api/auth/register \         │
+│   -H "Content-Type: application/json" \                        │
+│   -d '{"username":"john","password":"1234","role":"ROLE_USER"}'│
+│                                                                 │
+│ # Login                                                         │
+│ curl -X POST http://localhost:8081/api/auth/login \            │
+│   -H "Content-Type: application/json" \                        │
+│   -d '{"username":"john","password":"1234"}'                   │
+│                                                                 │
+│ # Create Ride                                                   │
+│ curl -X POST http://localhost:8081/api/v1/rides \              │
+│   -H "Authorization: Bearer <TOKEN>" \                         │
+│   -H "Content-Type: application/json" \                        │
+│   -d '{"pickupLocation":"A","dropLocation":"B"}'               │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 🎯 KEY VALIDATIONS                                              │
+├─────────────────────────────────────────────────────────────────┤
+│ @NotBlank         → Field cannot be empty                       │
+│ @Size(min=3)      → Minimum length check                        │
+│ @Valid            → Trigger validation in controller            │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ ⚠️  EXCEPTION HANDLING                                          │
+├─────────────────────────────────────────────────────────────────┤
+│ MethodArgumentNotValidException → 400 VALIDATION_ERROR         │
+│ NotFoundException               → 404 NOT_FOUND                 │
+│ BadRequestException             → 400 BAD_REQUEST               │
+│ UnauthorizedException           → 401 UNAUTHORIZED              │
+│ JwtException                    → 401 UNAUTHORIZED              │
+│ Generic Exception               → 500 INTERNAL_ERROR            │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 📚 IMPORTANT CONFIGURATION                                       │
+├─────────────────────────────────────────────────────────────────┤
+│ application.properties:                                         │
+│   server.port=8081                                             │
+│   spring.data.mongodb.uri=mongodb://localhost:27017/rideshare  │
+│   rideshare.jwt.secret=<256-bit-secret>                        │
+│   rideshare.jwt.expirationMs=3600000                           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ ✅ SUBMISSION CHECKLIST                                         │
+├─────────────────────────────────────────────────────────────────┤
+│ □ All 21 Java classes implemented                              │
+│ □ JWT authentication working                                   │
+│ □ BCrypt password encryption                                   │
+│ □ Role-based authorization (USER/DRIVER)                       │
+│ □ Input validation on all DTOs                                 │
+│ □ Global exception handler                                     │
+│ □ All 7 endpoints functional                                   │
+│ □ MongoDB integration working                                  │
+│ □ README with setup instructions                               │
+│ □ Clean folder structure                                       │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 📖 DOCUMENTATION FILES                                          │
+├─────────────────────────────────────────────────────────────────┤
+│ README.md           → Complete project documentation           │
+│ STUDENT_HELPER.md   → Detailed student reference guide         │
+│ FILE_STRUCTURE.md   → Complete file structure overview         │
+│ QUICK_REFERENCE.txt → This file                                │
+│ postman-collection.json → Ready-to-import Postman tests        │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔧 TROUBLESHOOTING                                              │
+├─────────────────────────────────────────────────────────────────┤
+│ Problem: MongoDB connection failed                             │
+│ Solution: brew services start mongodb-community                │
+│                                                                 │
+│ Problem: Port 8081 in use                                      │
+│ Solution: Change server.port in application.properties         │
+│                                                                 │
+│ Problem: JWT validation fails                                  │
+│ Solution: Ensure secret key is 256+ bits (32+ characters)      │
+│                                                                 │
+│ Problem: 403 Forbidden                                         │
+│ Solution: Check role matches endpoint requirement              │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ 🎓 TECHNOLOGIES USED                                            │
+├─────────────────────────────────────────────────────────────────┤
+│ • Spring Boot 3.2.0           • JJWT 0.12.3                    │
+│ • Spring Data MongoDB         • Jakarta Validation             │
+│ • Spring Security             • BCrypt                         │
+│ • Maven                       • Lombok                         │
+│ • Java 17                                                      │
+└─────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════╗
+║           Project Status: ✅ COMPLETE AND READY TO USE          ║
+║                                                                  ║
+║  Run: ./setup.sh for quick start instructions                   ║
+╚══════════════════════════════════════════════════════════════════╝

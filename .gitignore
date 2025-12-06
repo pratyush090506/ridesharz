@@ -1,0 +1,77 @@
+# Build outputs
+target/
+*.jar
+*.jar.original
+*.war
+*.ear
+*.class
+
+# Logs
+*.log
+app.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.springBeans
+.sts4-cache
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Documentation (keep only main README)
+ATLAS_SETUP_GUIDE.md
+MONGODB_SETUP.md
+NEXT_STEPS.md
+DEPLOYMENT_RAILWAY.md
+DEPLOYMENT_RENDER.md
+ENV_VARIABLES.md
+SUBMISSION_GUIDE.md
+QUICK_SUBMIT.md
+DEMO_GUIDE.md
+FULLSTACK_GUIDE.md
+STUDENT_HELPER.md
+FILE_STRUCTURE.md
+QUICK_REFERENCE.txt
+
+# Test scripts
+test-workflow.sh
+simple-test.sh
+setup.sh
+setup-deploy.sh
+postman-collection.json
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### macOS ###
+.DS_Store
