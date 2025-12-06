@@ -1,4 +1,4 @@
-# 🚀 RideShare Backend - Student Mini Project
+# 🚀 RideSharzBackend - Student Mini Project
 
 A complete ride-sharing backend application built with **Spring Boot**, **MongoDB**, and **JWT Authentication**.
 
